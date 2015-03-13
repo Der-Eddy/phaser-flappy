@@ -1,4 +1,4 @@
-windows.onload = function() {
+window.onload = function() {
 	var game = new Phaser.Game(320, 480, Phaser.AUTO, "", { preload: preload, create: create, update: update});
 	var bird;
 	var birdGravity = 800;
