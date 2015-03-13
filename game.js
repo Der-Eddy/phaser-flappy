@@ -3,13 +3,19 @@ window.onload = function() {
 	var bird;
 	var birdGravity = 800;
 	var birdSpeed = 125;
-	var birdFlapPower = 250;
+	var birdFlapPower = 300;
 	var pipeInterval = 2000;
 	var pipeHole = 120;
 	var pipeGroup;
 	var score = 0;
 	var scoreText;
 	var topScore;
+
+	var play = function(game){}
+
+	play.prototype = {
+		preload:preload, create: create, update: update,
+	}
 
 	function preload(){
 		game.load.image("bird", "bird.png");
@@ -40,50 +46,50 @@ window.onload = function() {
 		}
 	}
 
-	game.state.add("Play", play);
-	game.state.start("Play");
+	game.state.add("Play",play);
+    game.state.start("Play");
 
 	function updateScore(){
-		scoreText.text = "Score: " + score + "\nBest Score: " + topScore;
+		scoreText.text = "Score: " + score + "\nBest: " + topScore;	
 	}
-
+     
 	function flap(){
-		bird.body.velocity.y = birdFlapPower;
+		bird.body.velocity.y = -birdFlapPower;	
 	}
-
+	
 	function addPipe(){
-		var pipeHolePosition = game.rnd.between(50, 430-pipeHole);
-		var upperPipe = new Pipe(game, 320, pipeHolePosition-480, -birdSpeed);
+		var pipeHolePosition = game.rnd.between(50,430-pipeHole);
+		var upperPipe = new Pipe(game,320,pipeHolePosition-480,-birdSpeed);
 		game.add.existing(upperPipe);
 		pipeGroup.add(upperPipe);
-		var lowerPipe = new Pipe(game, 320, pipeHolePosition+pipeHole, -birdSpeed);
+		var lowerPipe = new Pipe(game,320,pipeHolePosition+pipeHole,-birdSpeed);
 		game.add.existing(lowerPipe);
 		pipeGroup.add(lowerPipe);
 	}
-
+	
 	function die(){
-		localStorage.setItem("topFlappyScore", Math.max(score, topScore));
-		game.state.start("Play");
+		localStorage.setItem("topFlappyScore",Math.max(score,topScore));	
+		game.state.start("Play");	
 	}
-
-	Pipe = function(game, x, y, speed){
+	
+	Pipe = function (game, x, y, speed) {
 		Phaser.Sprite.call(this, game, x, y, "pipe");
-		game.physics,enable(this, Phaser.Physics.ARCADE);
+		game.physics.enable(this, Phaser.Physics.ARCADE);
 		this.body.velocity.x = speed;
-		this.giveScore = true;
-	}
-
+		this.giveScore = true;	
+	};
+	
 	Pipe.prototype = Object.create(Phaser.Sprite.prototype);
 	Pipe.prototype.constructor = Pipe;
-
-	Pipe.prototype.update = function(){
-		if (this.x+this.width < bird.x && this.giveScore){
+	
+	Pipe.prototype.update = function() {
+		if(this.x+this.width < bird.x && this.giveScore){
 			score += 0.5;
 			updateScore();
 			this.giveScore = false;
 		}
-		if (this.x < -this.width){
+		if(this.x <-this.width){
 			this.destroy();
 		}
-	}
+	};	
 }
